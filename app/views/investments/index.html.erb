@@ -1,0 +1,30 @@
+<h1>Investments</h1>
+<table class="investments-table">
+  <thead>
+  <tr>
+    <th>Stock Name</th>
+    <th>ISIN</th>
+    <th>Shares</th>
+    <th>Purchase Price</th>
+    <th>Purchased At</th>
+    <th>Total price</th>
+    <th>Fees</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @investments.each do |investment| %>
+    <tr>
+      <td><%= investment.stock.name %></td>
+      <td><%= investment.stock.isin %></td>
+      <td><%= investment.shares %></td>
+      <td><%= number_to_currency(investment.purchase_price, unit: '€') %></td>
+      <td><%= investment.purchased_at.strftime('%Y-%m-%d') %></td>
+      <td><%= number_to_currency(investment.total_price, unit: '€') %></td>
+      <td>
+        <%= number_to_currency(investment.fees, unit: '€') %>
+        (<%= number_to_percentage(investment_fees_percentage(investment)) %>)
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
