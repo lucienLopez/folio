@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_16_152158) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_20_150722) do
   create_table "investment_sources", force: :cascade do |t|
     t.string "name", null: false
     t.string "url"
@@ -33,14 +33,27 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_16_152158) do
     t.index ["stock_id"], name: "index_investments_on_stock_id"
   end
 
+  create_table "stock_snapshots", force: :cascade do |t|
+    t.integer "stock_id", null: false
+    t.text "response_payload"
+    t.time "snapshot_at", null: false
+    t.decimal "previous_close_price", precision: 10, scale: 2
+    t.string "currency", limit: 3
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stock_id"], name: "index_stock_snapshots_on_stock_id"
+  end
+
   create_table "stocks", force: :cascade do |t|
     t.string "isin", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "symbol"
     t.index ["isin"], name: "index_stocks_on_isin", unique: true
   end
 
   add_foreign_key "investments", "investment_sources"
   add_foreign_key "investments", "stocks"
+  add_foreign_key "stock_snapshots", "stocks"
 end

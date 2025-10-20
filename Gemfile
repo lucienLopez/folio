@@ -47,6 +47,11 @@ gem "bootsnap", require: false
 # complete interface to CSV files and data.
 gem 'csv', '~> 3.3', '>= 3.3.5'
 
+# Very simple Ruby API for Yahoo Finance in order to query the stock market
+gem 'basic_yahoo_finance', '~> 0.5.2'
+
+gem 'openssl', '~> 3.3', '>= 3.3.1'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
