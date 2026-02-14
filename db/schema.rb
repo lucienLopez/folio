@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_20_150722) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_14_153600) do
   create_table "investment_sources", force: :cascade do |t|
     t.string "name", null: false
     t.string "url"
@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_20_150722) do
   end
 
   create_table "investments", force: :cascade do |t|
-    t.integer "stock_id", null: false
+    t.integer "security_id", null: false
     t.integer "investment_source_id"
     t.integer "shares", null: false
     t.decimal "purchase_price", precision: 10, scale: 2, null: false
@@ -30,30 +30,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_20_150722) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["investment_source_id"], name: "index_investments_on_investment_source_id"
-    t.index ["stock_id"], name: "index_investments_on_stock_id"
+    t.index ["security_id"], name: "index_investments_on_security_id"
   end
 
-  create_table "stock_snapshots", force: :cascade do |t|
-    t.integer "stock_id", null: false
+  create_table "securities", force: :cascade do |t|
+    t.string "isin", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "symbol"
+    t.string "kind"
+    t.index ["isin"], name: "index_securities_on_isin", unique: true
+  end
+
+  create_table "security_snapshots", force: :cascade do |t|
+    t.integer "security_id", null: false
     t.text "response_payload"
     t.time "snapshot_at", null: false
     t.decimal "previous_close_price", precision: 10, scale: 2
     t.string "currency", limit: 3
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["stock_id"], name: "index_stock_snapshots_on_stock_id"
-  end
-
-  create_table "stocks", force: :cascade do |t|
-    t.string "isin", null: false
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "symbol"
-    t.index ["isin"], name: "index_stocks_on_isin", unique: true
+    t.index ["security_id"], name: "index_security_snapshots_on_security_id"
   end
 
   add_foreign_key "investments", "investment_sources"
-  add_foreign_key "investments", "stocks"
-  add_foreign_key "stock_snapshots", "stocks"
+  add_foreign_key "investments", "securities"
+  add_foreign_key "security_snapshots", "securities"
 end

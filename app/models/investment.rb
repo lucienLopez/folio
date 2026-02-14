@@ -1,5 +1,5 @@
 class Investment < ApplicationRecord
-  belongs_to :stock
+  belongs_to :security
   belongs_to :investment_source, optional: true
 
   def fees

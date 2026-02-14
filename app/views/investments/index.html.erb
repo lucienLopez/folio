@@ -2,7 +2,8 @@
 <table class="investments-table">
   <thead>
   <tr>
-    <th>Stock Name</th>
+    <th>Name</th>
+    <th>Kind</th>
     <th>ISIN</th>
     <th>Shares</th>
     <th>Purchase Price</th>
@@ -14,8 +15,9 @@
   <tbody>
   <% @investments.each do |investment| %>
     <tr>
-      <td><%= investment.stock.name %></td>
-      <td><%= investment.stock.isin %></td>
+      <td><%= investment.security.name %></td>
+      <td><%= investment.security.kind&.humanize || "-" %></td>
+      <td><%= investment.security.isin %></td>
       <td><%= investment.shares %></td>
       <td><%= number_to_currency(investment.purchase_price, unit: '€') %></td>
       <td><%= investment.purchased_at.strftime('%Y-%m-%d') %></td>

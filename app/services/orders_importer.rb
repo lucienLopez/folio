@@ -12,15 +12,15 @@ class OrdersImporter < ApplicationService
       next unless row['Type d’opération'] == 'Achat'
       next unless row['Statut'] == 'Exécuté'
 
-      unless stock = Stock.find_by(isin: row['Isin'])
-        stock = Stock.create!(
+      unless security = Security.find_by(isin: row['Isin'])
+        security = Security.create!(
           isin: row['Isin'],
           name: row['Nom']
         )
       end
 
       investment = Investment.find_or_initialize_by(
-        stock: stock,
+        security: security,
         reference_number: row['Référence'],
       )
       investment.update!(
