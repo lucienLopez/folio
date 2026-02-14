@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_14_153600) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_14_164049) do
   create_table "investment_sources", force: :cascade do |t|
     t.string "name", null: false
     t.string "url"
