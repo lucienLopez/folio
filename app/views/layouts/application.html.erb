@@ -11,8 +11,20 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="bg-gray-50">
+    <nav class="fixed top-0 inset-x-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+      <div class="container mx-auto px-5 flex items-center gap-8 h-14">
+        <span class="font-bold text-gray-900 tracking-tight">Folio</span>
+        <div class="flex items-center gap-1">
+          <%= link_to "Investments", investments_path,
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'investments' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}" %>
+          <%= link_to "Securities", securities_path,
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'securities' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}" %>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container mx-auto mt-20 px-5 pt-8">
       <%= yield %>
     </main>
   </body>
