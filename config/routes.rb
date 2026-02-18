@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resources :investments, only: [:index]
+  resources :securities, only: [:index, :edit, :update]
 end
