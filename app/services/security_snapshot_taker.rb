@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SecuritySnapshotTaker < ApplicationService
   def self.take_all_snapshots
     Security.where.not(symbol: nil).find_each do |security|
@@ -15,7 +17,7 @@ class SecuritySnapshotTaker < ApplicationService
     quote = query.quotes(@security.symbol)
 
     unless quote
-      # TODO error handling / logging
+      # TODO: error handling / logging
     end
 
     payload = quote[@security.symbol]
@@ -25,7 +27,7 @@ class SecuritySnapshotTaker < ApplicationService
       response_payload: quote.to_json,
       snapshot_at: Time.current,
       previous_close_price: payload['regularMarketPreviousClose'],
-      currency: payload['currency'],
+      currency: payload['currency']
     )
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InvestmentsController < ApplicationController
   def index
     @investments = Investment.includes(:security).all

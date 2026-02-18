@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Investment < ApplicationRecord
   belongs_to :security
   belongs_to :investment_source, optional: true
