@@ -1,32 +1,44 @@
-<h1>Investments</h1>
-<table class="investments-table">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Kind</th>
-    <th>ISIN</th>
-    <th>Shares</th>
-    <th>Purchase Price</th>
-    <th>Purchased At</th>
-    <th>Total price</th>
-    <th>Fees</th>
-  </tr>
-  </thead>
-  <tbody>
-  <% @investments.each do |investment| %>
-    <tr>
-      <td><%= investment.security.name %></td>
-      <td><%= investment.security.kind&.humanize || "-" %></td>
-      <td><%= investment.security.isin %></td>
-      <td><%= investment.shares %></td>
-      <td><%= number_to_currency(investment.purchase_price, unit: '€') %></td>
-      <td><%= investment.purchased_at.strftime('%Y-%m-%d') %></td>
-      <td><%= number_to_currency(investment.total_price, unit: '€') %></td>
-      <td>
-        <%= number_to_currency(investment.fees, unit: '€') %>
-        (<%= number_to_percentage(investment_fees_percentage(investment)) %>)
-      </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<div class="w-full">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Portfolio</h1>
+    <p class="mt-1 text-sm text-gray-500">Your investment holdings</p>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl shadow-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200" data-controller="sort">
+      <thead class="bg-gray-900">
+        <tr>
+          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Name</th>
+          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Kind</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider" data-sort-method="none">ISIN</th>
+          <th class="sortable px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Shares</th>
+          <th class="sortable px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Purchase Price</th>
+          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Date</th>
+          <th class="sortable px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Total</th>
+          <th class="sortable px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Fees</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-100">
+        <% @investments.each do |investment| %>
+          <tr class="hover:bg-indigo-50 transition-colors duration-150">
+            <td class="px-6 py-4 font-medium text-gray-900"><%= investment.security.name %></td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                <%= investment.security.kind&.humanize || "—" %>
+              </span>
+            </td>
+            <td class="px-6 py-4 font-mono text-sm text-gray-500"><%= investment.security.isin %></td>
+            <td class="px-6 py-4 text-right text-gray-700"><%= investment.shares %></td>
+            <td class="px-6 py-4 text-right text-gray-700" data-sort="<%= investment.purchase_price %>"><%= number_to_currency(investment.purchase_price, unit: '€') %></td>
+            <td class="px-6 py-4 text-sm text-gray-500" data-sort="<%= investment.purchased_at.strftime('%Y%m%d') %>"><%= investment.purchased_at.strftime('%b %d, %Y') %></td>
+            <td class="px-6 py-4 text-right font-semibold text-gray-900" data-sort="<%= investment.total_price %>"><%= number_to_currency(investment.total_price, unit: '€') %></td>
+            <td class="px-6 py-4 text-right text-sm text-gray-500" data-sort="<%= investment.fees %>">
+              <%= number_to_currency(investment.fees, unit: '€') %>
+              <span class="text-xs text-gray-400">(<%= number_to_percentage(investment_fees_percentage(investment)) %>)</span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -36,3 +36,6 @@
 
 # Ignore IDE and editor config files
 /.idea
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

@@ -54,6 +54,9 @@ gem 'basic_yahoo_finance', '~> 0.5.2'
 
 gem 'openssl', '~> 3.3', '>= 3.3.1'
 
+# Integrate Tailwind CSS with the asset pipeline in Rails.
+gem "tailwindcss-rails"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri windows]
