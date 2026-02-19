@@ -4,35 +4,27 @@
     <p class="mt-1 text-sm text-gray-500">All tracked securities</p>
   </div>
 
-  <div class="overflow-hidden rounded-2xl shadow-lg border border-gray-200">
+  <div class="table-wrap">
     <table class="min-w-full divide-y divide-gray-200" data-controller="sort">
       <thead class="bg-gray-900">
         <tr>
-          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Name</th>
-          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Symbol</th>
-          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider" data-sort-method="none">ISIN</th>
-          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Kind</th>
-          <th class="sortable px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-white transition-colors">Investments</th>
+          <th class="table-th sortable text-left">Name</th>
+          <th class="table-th sortable text-left">Symbol</th>
+          <th class="table-th text-left" data-sort-method="none">ISIN</th>
+          <th class="table-th sortable text-left">Kind</th>
+          <th class="table-th sortable text-left">Investments</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
         <% @securities.each do |security| %>
-          <tr class="hover:bg-indigo-50 transition-colors duration-150">
-            <td class="px-6 py-4 font-medium text-gray-900">
+          <tr class="table-row">
+            <td class="table-td font-medium text-gray-900">
               <%= link_to security.name, edit_security_path(security), class: "hover:text-indigo-600 transition-colors" %>
             </td>
-            <td class="px-6 py-4 font-mono text-sm text-gray-500"><%= security.symbol || "—" %></td>
-            <td class="px-6 py-4 font-mono text-sm text-gray-500"><%= security.isin %></td>
-            <td class="px-6 py-4">
-              <% if security.kind %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-                  <%= security.kind.humanize %>
-                </span>
-              <% else %>
-                <span class="text-gray-400">—</span>
-              <% end %>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-500"><%= security.investments_count %></td>
+            <td class="table-td font-mono text-sm text-gray-500"><%= security.symbol || "—" %></td>
+            <td class="table-td font-mono text-sm text-gray-500"><%= security.isin %></td>
+            <td class="table-td"><%= security_kind_badge(security.kind) %></td>
+            <td class="table-td text-sm text-gray-500"><%= security.investments_count %></td>
           </tr>
         <% end %>
       </tbody>
