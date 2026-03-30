@@ -1,0 +1,10 @@
+#positions-table {
+  tr.row-gain-strong { background-color: #bbf7d0; }
+  tr.row-gain-strong:hover { background-color: #86efac; }
+  tr.row-gain-mild { background-color: #dcfce7; }
+  tr.row-gain-mild:hover { background-color: #bbf7d0; }
+  tr.row-loss-mild { background-color: #fee2e2; }
+  tr.row-loss-mild:hover { background-color: #fecaca; }
+  tr.row-loss-strong { background-color: #fecaca; }
+  tr.row-loss-strong:hover { background-color: #fca5a5; }
+}

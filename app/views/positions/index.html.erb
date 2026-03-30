@@ -1,30 +1,57 @@
+<% total_portfolio_value = @positions.sum { |p| p.current_value || 0 } %>
+<% total_invested = @positions.sum { |p| p.total_invested || 0 } %>
+<% total_gain = total_portfolio_value - total_invested %>
+
 <div class="w-full">
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Positions</h1>
-    <p class="mt-1 text-sm text-gray-500">Current holdings</p>
+    <p class="mt-1 text-sm text-gray-500">
+      Current holdings · <%= number_to_currency(total_portfolio_value, unit: '€') %>
+      <span class="<%= total_gain >= 0 ? 'text-green-600' : 'text-red-600' %>">
+        · <%= total_gain >= 0 ? '+' : '' %><%= number_to_currency(total_gain, unit: '€') %>
+        (<%= total_invested > 0 ? number_to_percentage(total_gain / total_invested * 100, precision: 1) : '—' %>)
+      </span>
+    </p>
   </div>
 
   <div class="table-wrap">
-    <table class="min-w-full divide-y divide-gray-200" data-controller="sort">
+    <table id="positions-table" class="min-w-full divide-y divide-gray-200" data-controller="sort">
       <thead class="bg-gray-900">
         <tr>
           <th class="table-th sortable text-left">Name</th>
           <th class="table-th sortable text-left">Kind</th>
-          <th class="table-th text-left" data-sort-method="none">ISIN</th>
-          <th class="table-th sortable text-right">Shares</th>
-          <th class="table-th sortable text-right">Avg Buy Price</th>
           <th class="table-th sortable text-right">Total Invested</th>
+          <th class="table-th sortable text-right">Current Value</th>
+          <th class="table-th sortable text-right">Gain / Loss</th>
+          <th class="table-th sortable text-right">% of Portfolio</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
         <% @positions.each do |position| %>
-          <tr class="table-row">
+          <tr class="table-row <%= position_row_class(position) %>">
             <td class="table-td font-medium text-gray-900"><%= position.name %></td>
             <td class="table-td"><%= security_kind_badge(position.kind) %></td>
-            <td class="table-td font-mono text-sm text-gray-500"><%= position.isin %></td>
-            <td class="table-td text-right text-gray-700" data-sort="<%= position.net_shares %>"><%= position.net_shares %></td>
-            <td class="table-td text-right text-gray-700" data-sort="<%= position.avg_buy_price_eur %>"><%= number_to_currency(position.avg_buy_price_eur, unit: '€') %></td>
             <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= position.total_invested %>"><%= number_to_currency(position.total_invested, unit: '€') %></td>
+            <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= position.current_value %>">
+              <%= position.current_value ? number_to_currency(position.current_value, unit: '€') : '—' %>
+            </td>
+            <td class="table-td text-right" data-sort="<%= position.gain %>">
+              <% if position.gain %>
+                <span class="font-medium <%= position.gain >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                  <%= number_to_currency(position.gain, unit: '€') %>
+                </span>
+                <span class="text-xs text-gray-400">(<%= number_to_percentage(position.gain_pct, precision: 1) %>)</span>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td class="table-td text-right text-gray-700" data-sort="<%= position.current_value %>">
+              <% if position.current_value && total_portfolio_value.positive? %>
+                <%= number_to_percentage(position.current_value / total_portfolio_value * 100, precision: 1) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

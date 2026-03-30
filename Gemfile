@@ -50,7 +50,7 @@ gem 'bootsnap', require: false
 gem 'csv', '~> 3.3', '>= 3.3.5'
 
 # Very simple Ruby API for Yahoo Finance in order to query the stock market
-gem 'basic_yahoo_finance', '~> 0.5.2'
+gem 'basic_yahoo_finance', '~> 0.6.0'
 
 gem 'openssl', '~> 3.3', '>= 3.3.1'
 

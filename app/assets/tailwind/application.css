@@ -18,9 +18,7 @@
     @apply px-6 py-4;
   }
 
-  .table-row {
-    @apply hover:bg-indigo-50 transition-colors duration-150;
-  }
+  .table-row { @apply hover:bg-indigo-50 transition-colors duration-150; }
 
   /* Sort icons */
   th.sortable::after {
