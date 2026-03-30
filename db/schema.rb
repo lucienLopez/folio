@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_30_000002) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_30_100001) do
   create_table "exchange_rates", force: :cascade do |t|
     t.date "date", null: false
     t.string "currency", null: false
@@ -20,28 +20,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_000002) do
     t.index ["date", "currency"], name: "index_exchange_rates_on_date_and_currency", unique: true
   end
 
-  create_table "investment_sources", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "url"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "investments", force: :cascade do |t|
+  create_table "orders", force: :cascade do |t|
     t.integer "security_id", null: false
-    t.integer "investment_source_id"
     t.integer "shares", null: false
-    t.decimal "purchase_price", precision: 10, scale: 2, null: false
-    t.decimal "total_price", precision: 10, scale: 2, null: false
-    t.datetime "purchased_at", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.datetime "executed_at", null: false
     t.string "reference_number"
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "purchase_currency", default: "EUR", null: false
-    t.decimal "purchase_price_eur", precision: 10, scale: 2
-    t.index ["investment_source_id"], name: "index_investments_on_investment_source_id"
-    t.index ["security_id"], name: "index_investments_on_security_id"
+    t.string "currency", default: "EUR", null: false
+    t.decimal "price_eur", precision: 10, scale: 2
+    t.string "operation_type", default: "buy", null: false
+    t.index ["security_id"], name: "index_orders_on_security_id"
   end
 
   create_table "securities", force: :cascade do |t|
@@ -65,7 +57,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_000002) do
     t.index ["security_id"], name: "index_security_snapshots_on_security_id"
   end
 
-  add_foreign_key "investments", "investment_sources"
-  add_foreign_key "investments", "securities"
+  add_foreign_key "orders", "securities"
   add_foreign_key "security_snapshots", "securities"
 end

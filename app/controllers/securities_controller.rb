@@ -2,9 +2,9 @@
 
 class SecuritiesController < ApplicationController
   def index
-    @securities = Security.left_joins(:investments)
+    @securities = Security.left_joins(:orders)
                           .group(:id)
-                          .select("securities.*, COUNT(investments.id) AS investments_count")
+                          .select("securities.*, COUNT(orders.id) AS orders_count")
   end
 
   def edit

@@ -1,0 +1,51 @@
+<div class="w-full">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Orders</h1>
+    <p class="mt-1 text-sm text-gray-500">Your executed buy and sell orders</p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="min-w-full divide-y divide-gray-200" data-controller="sort">
+      <thead class="bg-gray-900">
+        <tr>
+          <th class="table-th sortable text-left">Name</th>
+          <th class="table-th sortable text-left">Kind</th>
+          <th class="table-th text-left" data-sort-method="none">ISIN</th>
+          <th class="table-th sortable text-left">Type</th>
+          <th class="table-th sortable text-right">Shares</th>
+          <th class="table-th sortable text-right">Price</th>
+          <th class="table-th sortable text-left">Date</th>
+          <th class="table-th sortable text-right">Total</th>
+          <th class="table-th sortable text-right">Fees</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-100">
+        <% @orders.each do |order| %>
+          <tr class="table-row">
+            <td class="table-td font-medium text-gray-900"><%= order.security.name %></td>
+            <td class="table-td"><%= security_kind_badge(order.security.kind) %></td>
+            <td class="table-td font-mono text-sm text-gray-500"><%= order.security.isin %></td>
+            <td class="table-td">
+              <span class="<%= order.operation_type == 'buy' ? 'text-green-600' : 'text-red-600' %> font-medium capitalize">
+                <%= order.operation_type %>
+              </span>
+            </td>
+            <td class="table-td text-right text-gray-700"><%= order.shares %></td>
+            <td class="table-td text-right text-gray-700" data-sort="<%= order.price_eur %>">
+              <%= number_to_currency(order.price_eur, unit: '€') %>
+              <% unless order.currency == 'EUR' %>
+                <span class="text-xs text-gray-400">(<%= number_to_currency(order.price, unit: order.currency, format: '%n %u') %>)</span>
+              <% end %>
+            </td>
+            <td class="table-td text-sm text-gray-500" data-sort="<%= order.executed_at.strftime('%Y%m%d') %>"><%= order.executed_at.strftime('%b %d, %Y') %></td>
+            <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= order.total_amount %>"><%= number_to_currency(order.total_amount, unit: '€') %></td>
+            <td class="table-td text-right text-sm text-gray-500" data-sort="<%= order.fees %>">
+              <%= number_to_currency(order.fees, unit: '€') %>
+              <span class="text-xs text-gray-400">(<%= number_to_percentage(order_fees_percentage(order)) %>)</span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,24 +1,24 @@
-.investments-table {
+.orders-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-.investments-table th, .investments-table td {
+.orders-table th, .orders-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
 }
 
-.investments-table th {
+.orders-table th {
     background-color: #f2f2f2;
     font-weight: bold;
 }
 
-.investments-table tr:nth-child(even) {
+.orders-table tr:nth-child(even) {
     background-color: #fafafa;
 }
 
-.investments-table tr:hover {
+.orders-table tr:hover {
     background-color: #e6f7ff;
 }
