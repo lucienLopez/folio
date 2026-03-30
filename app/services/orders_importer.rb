@@ -11,7 +11,7 @@ class OrdersImporter < ApplicationService
     csv_data = File.readlines(@file_path, encoding: 'UTF-8')[4..] # Skip first 4 lines
 
     CSV.parse(csv_data.join, headers: true, col_sep: ';') do |row|
-      next unless row['Type d’opération'] == 'Achat'
+      next unless row["Type d’opération"] == 'Achat'
       next unless row['Statut'] == 'Exécuté'
 
       unless (security = Security.find_by(isin: row['Isin']))
@@ -25,11 +25,23 @@ class OrdersImporter < ApplicationService
         security: security,
         reference_number: row['Référence']
       )
+
+      purchase_price = row["Cours d’exécution"].to_s.gsub(/[^\d.,]/, "").tr(",", ".").to_f
+      purchase_currency = CurrencyParser.parse(row["Cours d’exécution"], row['Place'])
+      purchased_at = Date.parse(row['Date de création'])
+      purchase_price_eur = CurrencyConverter.call(
+        amount: purchase_price,
+        from: purchase_currency,
+        date: purchased_at
+      )
+
       investment.update!(
         shares: row['Quantité'].to_i,
-        purchase_price: row['Cours d’exécution'].to_s.gsub(/[^\d.,]/, '').tr(',', '.').to_f,
+        purchase_price: purchase_price,
+        purchase_currency: purchase_currency,
+        purchase_price_eur: purchase_price_eur,
         total_price: row['Montant'].to_s.gsub(/[^\d.,]/, '').tr(',', '.').to_f.abs,
-        purchased_at: Date.parse(row['Date de création'])
+        purchased_at: purchased_at
       )
     end
   end

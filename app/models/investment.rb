@@ -5,6 +5,6 @@ class Investment < ApplicationRecord
   belongs_to :investment_source, optional: true
 
   def fees
-    total_price - (shares * purchase_price)
+    total_price - (shares * purchase_price_eur)
   end
 end

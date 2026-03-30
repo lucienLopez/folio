@@ -25,7 +25,12 @@
             <td class="table-td"><%= security_kind_badge(investment.security.kind) %></td>
             <td class="table-td font-mono text-sm text-gray-500"><%= investment.security.isin %></td>
             <td class="table-td text-right text-gray-700"><%= investment.shares %></td>
-            <td class="table-td text-right text-gray-700" data-sort="<%= investment.purchase_price %>"><%= number_to_currency(investment.purchase_price, unit: '€') %></td>
+            <td class="table-td text-right text-gray-700" data-sort="<%= investment.purchase_price_eur %>">
+              <%= number_to_currency(investment.purchase_price_eur, unit: '€') %>
+              <% unless investment.purchase_currency == 'EUR' %>
+                <span class="text-xs text-gray-400">(<%= number_to_currency(investment.purchase_price, unit: investment.purchase_currency, format: '%n %u') %>)</span>
+              <% end %>
+            </td>
             <td class="table-td text-sm text-gray-500" data-sort="<%= investment.purchased_at.strftime('%Y%m%d') %>"><%= investment.purchased_at.strftime('%b %d, %Y') %></td>
             <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= investment.total_price %>"><%= number_to_currency(investment.total_price, unit: '€') %></td>
             <td class="table-td text-right text-sm text-gray-500" data-sort="<%= investment.fees %>">

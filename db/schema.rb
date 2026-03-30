@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_14_164049) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_30_000002) do
+  create_table "exchange_rates", force: :cascade do |t|
+    t.date "date", null: false
+    t.string "currency", null: false
+    t.decimal "rate", precision: 10, scale: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date", "currency"], name: "index_exchange_rates_on_date_and_currency", unique: true
+  end
+
   create_table "investment_sources", force: :cascade do |t|
     t.string "name", null: false
     t.string "url"
@@ -29,6 +38,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_14_164049) do
     t.string "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "purchase_currency", default: "EUR", null: false
+    t.decimal "purchase_price_eur", precision: 10, scale: 2
     t.index ["investment_source_id"], name: "index_investments_on_investment_source_id"
     t.index ["security_id"], name: "index_investments_on_security_id"
   end
