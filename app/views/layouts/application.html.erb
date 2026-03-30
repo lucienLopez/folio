@@ -16,6 +16,8 @@
       <div class="container mx-auto px-5 flex items-center gap-8 h-14">
         <span class="font-bold text-gray-900 tracking-tight">Folio</span>
         <div class="flex items-center gap-1">
+          <%= link_to "Positions", positions_path,
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'positions' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}" %>
           <%= link_to "Orders", orders_path,
                 class: "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'orders' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}" %>
           <%= link_to "Securities", securities_path,
