@@ -10,4 +10,7 @@ class Security < ApplicationRecord
   has_many :security_snapshots, dependent: :destroy
 
   validates :kind, inclusion: { in: KINDS }, allow_nil: true
+
+  def etf? = kind == ETF
+  def stock? = kind == STOCK
 end

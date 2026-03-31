@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_30_100001) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_31_000001) do
   create_table "exchange_rates", force: :cascade do |t|
     t.date "date", null: false
     t.string "currency", null: false
@@ -43,6 +43,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_100001) do
     t.datetime "updated_at", null: false
     t.string "symbol"
     t.string "kind"
+    t.string "sector"
+    t.string "industry"
+    t.string "country"
+    t.decimal "expense_ratio", precision: 8, scale: 4
     t.index ["isin"], name: "index_securities_on_isin", unique: true
   end
 

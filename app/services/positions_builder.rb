@@ -37,7 +37,7 @@ class PositionsBuilder < ApplicationService
       current_price_eur = current_price && CurrencyConverter.call(
         amount: current_price,
         from: current_currency,
-        date: Date.today
+        date: Time.zone.today
       )
 
       Position.new(

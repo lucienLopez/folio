@@ -24,6 +24,6 @@ class SecuritiesController < ApplicationController
   private
 
   def security_params
-    params.require(:security).permit(:name, :symbol, :kind, :isin)
+    params.require(:security).permit(:name, :symbol, :kind, :isin, :sector, :industry, :country, :expense_ratio)
   end
 end

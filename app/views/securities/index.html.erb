@@ -12,6 +12,8 @@
           <th class="table-th sortable text-left">Symbol</th>
           <th class="table-th text-left" data-sort-method="none">ISIN</th>
           <th class="table-th sortable text-left">Kind</th>
+          <th class="table-th sortable text-left">Sector</th>
+          <th class="table-th sortable text-left">Country</th>
           <th class="table-th sortable text-left">Orders</th>
         </tr>
       </thead>
@@ -24,6 +26,8 @@
             <td class="table-td font-mono text-sm text-gray-500"><%= security.symbol || "—" %></td>
             <td class="table-td font-mono text-sm text-gray-500"><%= security.isin %></td>
             <td class="table-td"><%= security_kind_badge(security.kind) %></td>
+            <td class="table-td text-sm text-gray-500"><%= security.sector || "—" %></td>
+            <td class="table-td text-sm text-gray-500"><%= security.country || "—" %></td>
             <td class="table-td text-sm text-gray-500"><%= security.orders_count %></td>
           </tr>
         <% end %>
