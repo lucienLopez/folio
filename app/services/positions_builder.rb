@@ -5,6 +5,7 @@ class PositionsBuilder < ApplicationService
     :name, :kind, :isin, :symbol,
     :net_shares, :avg_buy_price_eur, :total_invested,
     :current_price, :current_price_eur,
+    :sector, :country,
     keyword_init: true
   ) do
     def current_value
@@ -49,7 +50,9 @@ class PositionsBuilder < ApplicationService
         avg_buy_price_eur: row.avg_buy_price_eur,
         total_invested: row.total_invested,
         current_price: current_price,
-        current_price_eur: current_price_eur
+        current_price_eur: current_price_eur,
+        sector: row.sector,
+        country: row.country
       )
     end
   end

@@ -1,0 +1,23 @@
+<div class="w-full">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+    <p class="mt-1 text-sm text-gray-500">Portfolio breakdown · <%= number_to_currency(@total_value, unit: '€') %></p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Sector (stocks only)</h2>
+      <%= pie_chart @by_sector, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Country (stocks only)</h2>
+      <%= pie_chart @by_country, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Type</h2>
+      <%= pie_chart @by_kind, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6"] %>
+    </div>
+  </div>
+</div>
