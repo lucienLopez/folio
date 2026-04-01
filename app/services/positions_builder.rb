@@ -5,7 +5,7 @@ class PositionsBuilder < ApplicationService
     :name, :kind, :isin, :symbol,
     :net_shares, :avg_buy_price_eur, :total_invested,
     :current_price, :current_price_eur,
-    :sector, :country,
+    :sector, :country, :sleeve_name,
     keyword_init: true
   ) do
     def current_value
@@ -30,6 +30,7 @@ class PositionsBuilder < ApplicationService
   def call
     rows = fetch_rows
     prices = fetch_prices(rows.filter_map(&:symbol))
+    sleeves = Sleeve.all.index_by(&:id)
 
     rows.map do |row|
       payload = prices[row.symbol]
@@ -52,7 +53,8 @@ class PositionsBuilder < ApplicationService
         current_price: current_price,
         current_price_eur: current_price_eur,
         sector: row.sector,
-        country: row.country
+        country: row.country,
+        sleeve_name: sleeves[row.sleeve_id]&.name
       )
     end
   end

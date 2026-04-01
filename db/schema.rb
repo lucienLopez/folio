@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_31_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_000001) do
   create_table "exchange_rates", force: :cascade do |t|
     t.date "date", null: false
     t.string "currency", null: false
@@ -47,7 +47,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_31_000001) do
     t.string "industry"
     t.string "country"
     t.decimal "expense_ratio", precision: 8, scale: 4
+    t.integer "sleeve_id"
     t.index ["isin"], name: "index_securities_on_isin", unique: true
+    t.index ["sleeve_id"], name: "index_securities_on_sleeve_id"
   end
 
   create_table "security_snapshots", force: :cascade do |t|
@@ -61,6 +63,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_31_000001) do
     t.index ["security_id"], name: "index_security_snapshots_on_security_id"
   end
 
+  create_table "sleeves", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "target_weight", precision: 5, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "orders", "securities"
+  add_foreign_key "securities", "sleeves", column: "sleeve_id"
   add_foreign_key "security_snapshots", "securities"
 end

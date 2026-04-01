@@ -6,6 +6,8 @@ class Security < ApplicationRecord
     ETF = 'etf'
   ].freeze
 
+  belongs_to :sleeve, optional: true
+
   has_many :orders, dependent: :restrict_with_exception
   has_many :security_snapshots, dependent: :destroy
 

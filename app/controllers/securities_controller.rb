@@ -2,13 +2,15 @@
 
 class SecuritiesController < ApplicationController
   def index
-    @securities = Security.left_joins(:orders)
+    @securities = Security.includes(:sleeve)
+                          .left_joins(:orders)
                           .group(:id)
                           .select("securities.*, COUNT(orders.id) AS orders_count")
   end
 
   def edit
     @security = Security.find(params[:id])
+    @sleeves = Sleeve.order(:name)
   end
 
   def update
@@ -24,6 +26,7 @@ class SecuritiesController < ApplicationController
   private
 
   def security_params
-    params.require(:security).permit(:name, :symbol, :kind, :isin, :sector, :industry, :country, :expense_ratio)
+    params.require(:security).permit(:name, :symbol, :kind, :isin, :sector, :industry, :country, :expense_ratio,
+                                     :sleeve_id)
   end
 end

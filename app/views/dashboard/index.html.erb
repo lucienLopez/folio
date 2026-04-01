@@ -1,23 +1,75 @@
 <div class="w-full">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-    <p class="mt-1 text-sm text-gray-500">Portfolio breakdown · <%= number_to_currency(@total_value, unit: '€') %></p>
+  <div class="mb-8 flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        <% if @current_sleeve %>
+          <%= @current_sleeve.name %> · <%= number_to_currency(@scoped_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %>
+          <span class="text-gray-400">of <%= number_to_currency(@total_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %> total</span>
+        <% else %>
+          Portfolio · <%= number_to_currency(@total_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %>
+        <% end %>
+      </p>
+    </div>
+
+    <% if @sleeves.any? %>
+      <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1 shrink-0">
+        <%= link_to "All", dashboard_path,
+              class: "px-3 py-1.5 text-sm font-medium rounded-md transition-colors #{@current_sleeve.nil? ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}" %>
+        <% @sleeves.each do |sleeve| %>
+          <%= link_to sleeve.name, dashboard_path(sleeve_id: sleeve.id),
+                class: "px-3 py-1.5 text-sm font-medium rounded-md transition-colors #{@current_sleeve == sleeve ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}" %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
+  <%# Allocation bar — only on the "All" view %>
+  <% if @current_sleeve.nil? && @sleeves.any? %>
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Allocation</h2>
+      <div class="space-y-3">
+        <% @sleeves.each do |sleeve| %>
+          <% current_weight = @sleeve_weights[sleeve] %>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium text-gray-700"><%= sleeve.name %></span>
+              <span class="text-gray-500">
+                <%= current_weight %>% <span class="text-gray-400">/ target <%= sleeve.target_weight.to_i %>%</span>
+              </span>
+            </div>
+            <div class="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="absolute inset-y-0 left-0 bg-indigo-500 rounded-full transition-all"
+                   style="width: <%= [current_weight, 100].min %>%"></div>
+              <div class="absolute inset-y-0 border-l-2 border-indigo-300 border-dashed"
+                   style="left: <%= sleeve.target_weight %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
-      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Sector (stocks only)</h2>
-      <%= pie_chart @by_sector, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
-    </div>
+    <% if @by_sector.any? %>
+      <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Sector</h2>
+        <%= pie_chart @by_sector, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
+      </div>
+    <% end %>
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
-      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Country (stocks only)</h2>
-      <%= pie_chart @by_country, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
-    </div>
+    <% if @by_country.any? %>
+      <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Country</h2>
+        <%= pie_chart @by_country, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"] %>
+      </div>
+    <% end %>
 
-    <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
-      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Type</h2>
-      <%= pie_chart @by_kind, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6"] %>
-    </div>
+    <% if @by_kind.any? %>
+      <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">By Type</h2>
+        <%= pie_chart @by_kind, donut: true, height: "280px", thousands: "\u202F", decimal: ".", suffix: " €", colors: ["#6366f1", "#8b5cf6"] %>
+      </div>
+    <% end %>
   </div>
 </div>
