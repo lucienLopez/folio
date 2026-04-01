@@ -28,7 +28,8 @@
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
         <% @positions.each do |position| %>
-          <tr class="table-row <%= position_row_class(position) %>">
+          <% row_style = position_row_style(position) %>
+          <tr class="table-row <%= 'row-colored' if row_style %>" style="<%= row_style %>">
             <td class="table-td font-medium text-gray-900"><%= position.name %></td>
             <td class="table-td"><%= security_kind_badge(position.kind) %></td>
             <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= position.total_invested %>"><%= number_to_currency(position.total_invested, unit: '€') %></td>
