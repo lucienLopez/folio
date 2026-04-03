@@ -24,6 +24,7 @@
           <th class="table-th sortable text-right">Current Value</th>
           <th class="table-th sortable text-right">Gain / Loss</th>
           <th class="table-th sortable text-right">% of Portfolio</th>
+          <th class="table-th sortable text-right">% in Sleeve</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
@@ -49,6 +50,18 @@
             <td class="table-td text-right text-gray-700" data-sort="<%= position.current_value %>">
               <% if position.current_value && total_portfolio_value.positive? %>
                 <%= number_to_percentage(position.current_value / total_portfolio_value * 100, precision: 1) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td class="table-td text-right" data-sort="<%= position.sleeve_weight %>">
+              <% if position.sleeve_weight %>
+                <span class="font-medium <%= sleeve_weight_color(position) %>">
+                  <%= number_to_percentage(position.sleeve_weight, precision: 1) %>
+                </span>
+                <% if position.target_weight %>
+                  <span class="text-xs text-gray-400">(<%= number_to_percentage(position.target_weight, precision: 1) %>)</span>
+                <% end %>
               <% else %>
                 —
               <% end %>

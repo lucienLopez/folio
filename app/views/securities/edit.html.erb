@@ -47,6 +47,11 @@
     </div>
 
     <div>
+      <%= f.label :target_weight, "Target weight in sleeve (%)", class: "form-label" %>
+      <%= f.number_field :target_weight, step: 0.01, min: 0, max: 100, placeholder: "e.g. 10.5", class: "form-input" %>
+    </div>
+
+    <div>
       <%= f.label :sector, class: "form-label" %>
       <%= f.text_field :sector, class: "form-input" %>
     </div>

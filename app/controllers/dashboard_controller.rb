@@ -13,6 +13,7 @@ class DashboardController < ApplicationController
     end
 
     scoped = @current_sleeve ? positions.select { |p| p.sleeve_name == @current_sleeve.name } : positions
+    @scoped_positions = scoped
     stocks = scoped.select { |p| p.kind == Security::STOCK }
 
     @by_sector = group_by_value(stocks, :sector)

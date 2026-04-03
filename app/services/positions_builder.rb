@@ -6,6 +6,7 @@ class PositionsBuilder < ApplicationService
     :net_shares, :avg_buy_price_eur, :total_invested,
     :current_price, :current_price_eur,
     :sector, :country, :sleeve_name,
+    :target_weight, :sleeve_weight,
     keyword_init: true
   ) do
     def current_value
@@ -54,9 +55,10 @@ class PositionsBuilder < ApplicationService
         current_price_eur: current_price_eur,
         sector: row.sector,
         country: row.country,
-        sleeve_name: sleeves[row.sleeve_id]&.name
+        sleeve_name: sleeves[row.sleeve_id]&.name,
+        target_weight: row.target_weight
       )
-    end
+    end.tap { |positions| assign_sleeve_weights(positions) }
   end
 
   private
@@ -75,6 +77,19 @@ class PositionsBuilder < ApplicationService
       )
       .having("SUM(CASE WHEN orders.operation_type = 'buy' THEN orders.shares ELSE -orders.shares END) > 0")
       .order("total_invested DESC")
+  end
+
+  def assign_sleeve_weights(positions)
+    sleeve_totals = positions.group_by(&:sleeve_name).transform_values do |sleeve_positions|
+      sleeve_positions.sum { |p| p.current_value || 0 }
+    end
+
+    positions.each do |position|
+      total = sleeve_totals[position.sleeve_name]
+      next unless total&.positive? && position.current_value
+
+      position.sleeve_weight = position.current_value / total * 100
+    end
   end
 
   def fetch_prices(symbols)

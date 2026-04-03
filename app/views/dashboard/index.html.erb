@@ -50,6 +50,39 @@
     </div>
   <% end %>
 
+  <%# Securities allocation within sleeve %>
+  <% sleeve_positions = @scoped_positions.select { |p| p.sleeve_weight } %>
+  <% if sleeve_positions.any? && sleeve_positions.any? { |p| p.target_weight } %>
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Securities allocation</h2>
+      <div class="space-y-3">
+        <% sleeve_positions.sort_by { |p| -(p.sleeve_weight || 0) }.each do |position| %>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium text-gray-700"><%= position.name %></span>
+              <span>
+                <span class="<%= position.target_weight ? sleeve_weight_color(position) : 'text-gray-500' %>">
+                  <%= number_to_percentage(position.sleeve_weight, precision: 1) %>
+                </span>
+                <% if position.target_weight %>
+                  <span class="text-gray-400">/ target <%= number_to_percentage(position.target_weight, precision: 1) %></span>
+                <% end %>
+              </span>
+            </div>
+            <div class="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="absolute inset-y-0 left-0 rounded-full transition-all <%= position.target_weight ? sleeve_weight_bar_color(position) : 'bg-indigo-500' %>"
+                   style="width: <%= [position.sleeve_weight, 100].min %>%"></div>
+              <% if position.target_weight %>
+                <div class="absolute inset-y-0 border-l-2 border-indigo-300 border-dashed"
+                     style="left: <%= [position.target_weight, 100].min %>%"></div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <% if @by_sector.any? %>
       <div class="bg-white rounded-xl border border-gray-200 p-6" data-controller="donut-chart">

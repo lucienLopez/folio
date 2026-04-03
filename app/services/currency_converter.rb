@@ -24,13 +24,26 @@ class CurrencyConverter < ApplicationService
 
   def fetch_and_store_rate
     uri = URI("#{FRANKFURTER_URL}/#{@date}?from=#{BASE_CURRENCY}&to=#{@from}")
-    response = Net::HTTP.get(uri)
-    data = JSON.parse(response)
+    response = fetch_with_redirects(uri)
+    raise "Exchange rate API error #{response.code} for #{@from} on #{@date}" unless response.is_a?(Net::HTTPSuccess)
+
+    data = JSON.parse(response.body)
     rate = data.dig('rates', @from)
 
     raise "Could not fetch exchange rate for #{@from} on #{@date}" if rate.nil?
 
     ExchangeRate.create!(date: @date, currency: @from, rate: rate)
     rate
+  end
+
+  def fetch_with_redirects(uri, limit = 5)
+    raise "Too many redirects" if limit == 0
+
+    response = Net::HTTP.get_response(uri)
+    if response.is_a?(Net::HTTPRedirection)
+      fetch_with_redirects(URI(response['location']), limit - 1)
+    else
+      response
+    end
   end
 end
