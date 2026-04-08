@@ -5,9 +5,15 @@
       <p class="mt-1 text-sm text-gray-500">
         <% if @current_sleeve %>
           <%= @current_sleeve.name %> · <%= number_to_currency(@scoped_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %>
+          <% if @scoped_day_change %>
+            <%= day_change_badge(@scoped_day_change) %>
+          <% end %>
           <span class="text-gray-400">of <%= number_to_currency(@total_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %> total</span>
         <% else %>
           Portfolio · <%= number_to_currency(@total_value, unit: '€', precision: 0, delimiter: "\u202F", separator: ".") %>
+          <% if @total_day_change %>
+            <%= day_change_badge(@total_day_change) %>
+          <% end %>
         <% end %>
       </p>
     </div>
@@ -33,7 +39,12 @@
           <% current_weight = @sleeve_weights[sleeve] %>
           <div>
             <div class="flex justify-between text-sm mb-1">
-              <span class="font-medium text-gray-700"><%= sleeve.name %></span>
+              <span class="font-medium text-gray-700">
+                <%= sleeve.name %>
+                <% if @sleeve_day_changes[sleeve] %>
+                  <%= day_change_badge(@sleeve_day_changes[sleeve], size: :small) %>
+                <% end %>
+              </span>
               <span class="text-gray-500">
                 <%= current_weight %>% <span class="text-gray-400">/ target <%= sleeve.target_weight.to_i %>%</span>
               </span>

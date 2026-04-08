@@ -1,17 +1,45 @@
 <% total_portfolio_value = @positions.sum { |p| p.current_value || 0 } %>
 <% total_invested = @positions.sum { |p| p.total_invested || 0 } %>
 <% total_gain = total_portfolio_value - total_invested %>
+<% total_day_change = begin
+     with_change = @positions.select { |p| p.day_change }
+     if with_change.any?
+       change = with_change.sum { |p| p.day_change }
+       prev = with_change.sum { |p| p.previous_close_value }
+       { change: change, pct: prev.positive? ? (change / prev * 100).round(2) : nil }
+     end
+   end %>
 
-<div class="w-full">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Positions</h1>
-    <p class="mt-1 text-sm text-gray-500">
-      Current holdings · <%= number_to_currency(total_portfolio_value, unit: '€') %>
-      <span class="<%= total_gain >= 0 ? 'text-green-600' : 'text-red-600' %>">
-        · <%= total_gain >= 0 ? '+' : '' %><%= number_to_currency(total_gain, unit: '€') %>
-        (<%= total_invested > 0 ? number_to_percentage(total_gain / total_invested * 100, precision: 1) : '—' %>)
-      </span>
-    </p>
+<div class="w-full" data-controller="column-toggle" data-column-toggle-storage-key-value="positions-columns">
+  <div class="mb-8 flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Positions</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        Current holdings · <%= number_to_currency(total_portfolio_value, unit: '€') %>
+        <span class="<%= total_gain >= 0 ? 'text-green-600' : 'text-red-600' %>">
+          · <%= total_gain >= 0 ? '+' : '' %><%= number_to_currency(total_gain, unit: '€') %>
+          (<%= total_invested > 0 ? number_to_percentage(total_gain / total_invested * 100, precision: 1) : '—' %>)
+        </span>
+        <% if total_day_change %>
+          · <%= day_change_badge(total_day_change) %> today
+        <% end %>
+      </p>
+    </div>
+
+    <%# Columns picker %>
+    <div class="relative shrink-0">
+      <button data-action="click->column-toggle#togglePanel"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        </svg>
+        Columns
+      </button>
+
+      <div data-column-toggle-target="panel"
+           class="hidden absolute right-0 mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-lg py-1.5 min-w-[180px]">
+      </div>
+    </div>
   </div>
 
   <div class="table-wrap">
@@ -19,12 +47,13 @@
       <thead class="bg-gray-900">
         <tr>
           <th class="table-th sortable text-left">Name</th>
-          <th class="table-th sortable text-left">Kind</th>
-          <th class="table-th sortable text-right">Total Invested</th>
-          <th class="table-th sortable text-right">Current Value</th>
-          <th class="table-th sortable text-right">Gain / Loss</th>
-          <th class="table-th sortable text-right">% of Portfolio</th>
-          <th class="table-th sortable text-right">% in Sleeve</th>
+          <th class="table-th sortable text-left" data-column="kind">Kind</th>
+          <th class="table-th sortable text-right" data-column="invested">Total Invested</th>
+          <th class="table-th sortable text-right" data-column="value">Current Value</th>
+          <th class="table-th sortable text-right" data-column="gain">Gain / Loss</th>
+          <th class="table-th sortable text-right" data-column="day-change">Day Change</th>
+          <th class="table-th sortable text-right" data-column="portfolio-pct">% of Portfolio</th>
+          <th class="table-th sortable text-right" data-column="sleeve-pct">% in Sleeve</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-100">
@@ -32,12 +61,14 @@
           <% row_style = position_row_style(position) %>
           <tr class="table-row <%= 'row-colored' if row_style %>" style="<%= row_style %>">
             <td class="table-td font-medium text-gray-900"><%= position.name %></td>
-            <td class="table-td"><%= security_kind_badge(position.kind) %></td>
-            <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= position.total_invested %>"><%= number_to_currency(position.total_invested, unit: '€') %></td>
-            <td class="table-td text-right font-semibold text-gray-900" data-sort="<%= position.current_value %>">
+            <td class="table-td" data-column="kind"><%= security_kind_badge(position.kind) %></td>
+            <td class="table-td text-right font-semibold text-gray-900" data-column="invested" data-sort="<%= position.total_invested %>">
+              <%= number_to_currency(position.total_invested, unit: '€') %>
+            </td>
+            <td class="table-td text-right font-semibold text-gray-900" data-column="value" data-sort="<%= position.current_value %>">
               <%= position.current_value ? number_to_currency(position.current_value, unit: '€') : '—' %>
             </td>
-            <td class="table-td text-right" data-sort="<%= position.gain %>">
+            <td class="table-td text-right" data-column="gain" data-sort="<%= position.gain %>">
               <% if position.gain %>
                 <span class="font-medium <%= position.gain >= 0 ? 'text-green-600' : 'text-red-600' %>">
                   <%= number_to_currency(position.gain, unit: '€') %>
@@ -47,14 +78,21 @@
                 —
               <% end %>
             </td>
-            <td class="table-td text-right text-gray-700" data-sort="<%= position.current_value %>">
+            <td class="table-td text-right" data-column="day-change" data-sort="<%= position.day_change %>">
+              <% if position.day_change %>
+                <%= day_change_badge({ change: position.day_change, pct: position.day_change_pct&.round(2) }) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td class="table-td text-right text-gray-700" data-column="portfolio-pct" data-sort="<%= position.current_value %>">
               <% if position.current_value && total_portfolio_value.positive? %>
                 <%= number_to_percentage(position.current_value / total_portfolio_value * 100, precision: 1) %>
               <% else %>
                 —
               <% end %>
             </td>
-            <td class="table-td text-right" data-sort="<%= position.sleeve_weight %>">
+            <td class="table-td text-right" data-column="sleeve-pct" data-sort="<%= position.sleeve_weight %>">
               <% if position.sleeve_weight %>
                 <span class="font-medium <%= sleeve_weight_color(position) %>">
                   <%= number_to_percentage(position.sleeve_weight, precision: 1) %>

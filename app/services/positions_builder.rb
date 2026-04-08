@@ -5,6 +5,7 @@ class PositionsBuilder < ApplicationService
     :name, :kind, :isin, :symbol,
     :net_shares, :avg_buy_price_eur, :total_invested,
     :current_price, :current_price_eur,
+    :previous_close_price, :previous_close_price_eur,
     :sector, :country, :sleeve_name,
     :target_weight, :sleeve_weight,
     keyword_init: true
@@ -13,6 +14,24 @@ class PositionsBuilder < ApplicationService
       return nil unless current_price_eur
 
       net_shares * current_price_eur
+    end
+
+    def previous_close_value
+      return nil unless previous_close_price_eur
+
+      net_shares * previous_close_price_eur
+    end
+
+    def day_change
+      return nil unless current_value && previous_close_value
+
+      current_value - previous_close_value
+    end
+
+    def day_change_pct
+      return nil unless day_change && previous_close_value&.positive?
+
+      day_change / previous_close_value * 100
     end
 
     def gain
@@ -36,9 +55,15 @@ class PositionsBuilder < ApplicationService
     rows.map do |row|
       payload = prices[row.symbol]
       current_price = payload&.[]('regularMarketPrice')
+      previous_close_price = payload&.[]('regularMarketPreviousClose')
       current_currency = payload&.[]('currency') || 'EUR'
       current_price_eur = current_price && CurrencyConverter.call(
         amount: current_price,
+        from: current_currency,
+        date: Time.zone.today
+      )
+      previous_close_price_eur = previous_close_price && CurrencyConverter.call(
+        amount: previous_close_price,
         from: current_currency,
         date: Time.zone.today
       )
@@ -53,6 +78,8 @@ class PositionsBuilder < ApplicationService
         total_invested: row.total_invested,
         current_price: current_price,
         current_price_eur: current_price_eur,
+        previous_close_price: previous_close_price,
+        previous_close_price_eur: previous_close_price_eur,
         sector: row.sector,
         country: row.country,
         sleeve_name: sleeves[row.sleeve_id]&.name,
