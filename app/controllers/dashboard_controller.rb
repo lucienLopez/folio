@@ -2,6 +2,8 @@
 
 class DashboardController < ApplicationController
   def index
+    load_performance_chart_data
+
     positions = PositionsBuilder.call
     @total_value = positions.sum { |p| p.current_value || 0 }
     @sleeves = Sleeve.all.to_a
@@ -29,6 +31,37 @@ class DashboardController < ApplicationController
   end
 
   private
+
+  def load_performance_chart_data
+    snapshots = PortfolioSnapshot.where(date: 1.year.ago.to_date..).order(:date)
+    global_rows = snapshots.global.pluck(:date, :value_eur, :invested_eur)
+
+    @chart_has_data = global_rows.any?
+    return unless @chart_has_data
+
+    @chart_global_value = global_rows.map { |d, v, _i| [fmt(d), v.to_f] }.to_h
+    @chart_global_perf  = global_rows.map { |d, v, i|
+      pct = i.positive? ? ((v - i) / i * 100).round(2) : 0
+      [fmt(d), pct]
+    }.to_h
+
+    @chart_sleeves_value = {}
+    @chart_sleeves_perf  = {}
+    Sleeve.all.find_each do |sleeve|
+      rows = snapshots.for_sleeve(sleeve.id).pluck(:date, :value_eur, :invested_eur)
+      next if rows.empty?
+
+      @chart_sleeves_value[sleeve.name] = rows.map { |d, v, _i| [fmt(d), v.to_f] }.to_h
+      @chart_sleeves_perf[sleeve.name]  = rows.map { |d, v, i|
+        pct = i.positive? ? ((v - i) / i * 100).round(2) : 0
+        [fmt(d), pct]
+      }.to_h
+    end
+  end
+
+  def fmt(date)
+    date.strftime("%d/%m/%Y")
+  end
 
   def day_change_stats(positions)
     with_change = positions.select(&:day_change)

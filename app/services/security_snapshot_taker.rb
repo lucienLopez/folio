@@ -6,6 +6,7 @@ class SecuritySnapshotTaker < ApplicationService
       SecuritySnapshotTaker.call(security)
       sleep 1 # Not sure if there are rate limits
     end
+    PortfolioSnapshotRecorder.call(date: Time.zone.today)
   end
 
   def initialize(security)

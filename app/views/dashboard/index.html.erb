@@ -30,6 +30,56 @@
     <% end %>
   </div>
 
+  <%# Performance chart %>
+  <% if @chart_has_data %>
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6"
+         data-controller="performance-chart">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Performance</h2>
+        <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          <button data-action="click->performance-chart#showPerf"
+                  data-performance-chart-target="perfBtn"
+                  class="px-3 py-1 text-xs font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm">
+            % Return
+          </button>
+          <button data-action="click->performance-chart#showValue"
+                  data-performance-chart-target="valueBtn"
+                  class="px-3 py-1 text-xs font-medium rounded-md transition-colors text-gray-500 hover:text-gray-700">
+            € Value
+          </button>
+        </div>
+      </div>
+
+      <div data-performance-chart-target="perfChart">
+        <%= line_chart(
+          [{ name: "Global", data: @chart_global_perf }] +
+            @chart_sleeves_perf.map { |name, data| { name: name, data: data } },
+          height: "260px",
+          thousands: "\u202F",
+          decimal: ".",
+          suffix: "%",
+          discrete: true,
+          colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"],
+          library: { elements: { point: { radius: 0, hitRadius: 8, hoverRadius: 4 } } }
+        ) %>
+      </div>
+
+      <div data-performance-chart-target="valueChart" class="hidden">
+        <%= line_chart(
+          [{ name: "Global", data: @chart_global_value }] +
+            @chart_sleeves_value.map { |name, data| { name: name, data: data } },
+          height: "260px",
+          thousands: "\u202F",
+          decimal: ".",
+          suffix: " €",
+          discrete: true,
+          colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#14b8a6"],
+          library: { elements: { point: { radius: 0, hitRadius: 8, hoverRadius: 4 } } }
+        ) %>
+      </div>
+    </div>
+  <% end %>
+
   <%# Allocation bar — only on the "All" view %>
   <% if @current_sleeve.nil? && @sleeves.any? %>
     <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">

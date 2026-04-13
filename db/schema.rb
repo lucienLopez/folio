@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_03_140926) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_09_154019) do
   create_table "exchange_rates", force: :cascade do |t|
     t.date "date", null: false
     t.string "currency", null: false
@@ -34,6 +34,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_03_140926) do
     t.decimal "price_eur", precision: 10, scale: 2
     t.string "operation_type", default: "buy", null: false
     t.index ["security_id"], name: "index_orders_on_security_id"
+  end
+
+  create_table "portfolio_snapshots", force: :cascade do |t|
+    t.date "date", null: false
+    t.integer "sleeve_id"
+    t.decimal "value_eur", precision: 12, scale: 2, null: false
+    t.decimal "invested_eur", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date", "sleeve_id"], name: "index_portfolio_snapshots_on_date_and_sleeve_id", unique: true
   end
 
   create_table "securities", force: :cascade do |t|
@@ -72,6 +82,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_03_140926) do
   end
 
   add_foreign_key "orders", "securities"
+  add_foreign_key "portfolio_snapshots", "sleeves", column: "sleeve_id"
   add_foreign_key "securities", "sleeves", column: "sleeve_id"
   add_foreign_key "security_snapshots", "securities"
 end
