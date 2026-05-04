@@ -84,13 +84,14 @@ class PortfolioSnapshotRecorder < ApplicationService
         hash[row.id] = { price: q['regularMarketPrice'], currency: q['currency'] || 'EUR' }
       end
     else
+      # Use the most recent available price on or before the date (handles holidays/missing days)
       SecuritySnapshot
         .where(security_id: rows.map(&:id))
-        .where("DATE(created_at) = ?", date)
+        .where("DATE(created_at) <= ?", date)
+        .where.not(previous_close_price: nil)
+        .order(created_at: :desc)
         .each_with_object({}) do |snap, hash|
-          next unless snap.previous_close_price
-
-          hash[snap.security_id] = { price: snap.previous_close_price, currency: snap.currency || 'EUR' }
+          hash[snap.security_id] ||= { price: snap.previous_close_price, currency: snap.currency || 'EUR' }
         end
     end
   end

@@ -16,12 +16,12 @@ class SecuritySnapshotTaker < ApplicationService
   def call
     query = BasicYahooFinance::Query.new
     quote = query.quotes(@security.symbol)
+    payload = quote&.[](@security.symbol)
 
-    unless quote
-      # TODO: error handling / logging
+    unless payload
+      Rails.logger.warn("SecuritySnapshotTaker: no quote data for #{@security.symbol}, skipping")
+      return
     end
-
-    payload = quote[@security.symbol]
 
     SecuritySnapshot.create!(
       security: @security,
@@ -30,5 +30,7 @@ class SecuritySnapshotTaker < ApplicationService
       previous_close_price: payload['regularMarketPreviousClose'],
       currency: payload['currency']
     )
+  rescue StandardError => e
+    Rails.logger.error("SecuritySnapshotTaker failed for #{@security.symbol}: #{e.message}")
   end
 end
